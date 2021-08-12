@@ -128,7 +128,7 @@ add_custom_command(OUTPUT tfm_s_signed.bin
         --layout $<TARGET_OBJECTS:signing_layout_s>
         -k ${MCUBOOT_KEY_S}
         --public-key-format $<IF:$<BOOL:${MCUBOOT_HW_KEY}>,full,hash>
-        --align 1
+        --align ${MCUBOOT_ALIGN_VAL}
         --pad
         --pad-header
         -H 0x400

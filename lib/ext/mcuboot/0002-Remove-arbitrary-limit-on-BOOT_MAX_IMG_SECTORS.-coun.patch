@@ -1,0 +1,37 @@
+From 0d03c6efa3b2ae3d1fb4871c1d57537a59c768d5 Mon Sep 17 00:00:00 2001
+From: Kristine Jassmann <kristine.jassmann@renesas.com>
+Date: Wed, 17 Feb 2021 17:56:41 +0000
+Subject: [PATCH 2/4] Remove arbitrary limit on BOOT_MAX_IMG_SECTORS. count is
+ initialized before it is passed to flash_area_get_sectors. The flash driver
+ should use count to ensure an overrun does not occur.
+
+Signed-off-by: Kristine Jassmann <kristine.jassmann@renesas.com>
+---
+ boot/bootutil/src/bootutil_priv.h | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/boot/bootutil/src/bootutil_priv.h b/boot/bootutil/src/bootutil_priv.h
+index b13c84c..4944ca3 100644
+--- a/boot/bootutil/src/bootutil_priv.h
++++ b/boot/bootutil/src/bootutil_priv.h
+@@ -164,17 +164,6 @@ _Static_assert(BOOT_IMAGE_NUMBER > 0, "Invalid value for BOOT_IMAGE_NUMBER");
+                  (hdr)->ih_ver.iv_revision,                               \
+                  (hdr)->ih_ver.iv_build_num)
+ 
+-/*
+- * The current flashmap API does not check the amount of space allocated when
+- * loading sector data from the flash device, allowing for smaller counts here
+- * would most surely incur in overruns.
+- *
+- * TODO: make flashmap API receive the current sector array size.
+- */
+-#if BOOT_MAX_IMG_SECTORS < 32
+-#error "Too few sectors, please increase BOOT_MAX_IMG_SECTORS to at least 32"
+-#endif
+-
+ #if MCUBOOT_SWAP_USING_MOVE
+ #define BOOT_STATUS_MOVE_STATE_COUNT    1
+ #define BOOT_STATUS_SWAP_STATE_COUNT    2
+-- 
+2.32.0.windows.2
+

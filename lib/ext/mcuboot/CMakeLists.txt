@@ -20,6 +20,18 @@ else()
 endif()
 
 if ("${MCUBOOT_PATH}" STREQUAL "DOWNLOAD")
+    find_package(Git)
+    file(GLOB PATCH_FILES *.patch)
+    if (PATCH_FILES)
+    FetchContent_Declare(mcuboot
+        GIT_REPOSITORY https://github.com/mcu-tools/mcuboot.git
+        GIT_TAG ${MCUBOOT_VERSION}
+        GIT_SHALLOW FALSE
+        GIT_PROGRESS TRUE
+        GIT_SUBMODULES ${MCUBOOT_SUBMODULES}
+        PATCH_COMMAND ${GIT_EXECUTABLE} apply ${PATCH_FILES}
+    )
+    else()
     FetchContent_Declare(mcuboot
         GIT_REPOSITORY https://github.com/mcu-tools/mcuboot.git
         GIT_TAG ${MCUBOOT_VERSION}
@@ -27,6 +39,7 @@ if ("${MCUBOOT_PATH}" STREQUAL "DOWNLOAD")
         GIT_PROGRESS TRUE
         GIT_SUBMODULES ${MCUBOOT_SUBMODULES}
     )
+    endif()
     # ToDo: set GIT_SHALLOW to 'TRUE' when MCUBOOT_VERSION will be set to a tag
     # (instead of a commit hash) with the new release.
 

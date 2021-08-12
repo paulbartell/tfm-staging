@@ -76,7 +76,7 @@ os.environ['LANG'] = 'C.UTF-8'
               'keyword to automatically generate it from the image version.')
 @click.option('-v', '--version', callback=imgtool.main.validate_version,
               required=True)
-@click.option('--align', type=click.Choice(['1', '2', '4', '8']),
+@click.option('--align', type=click.Choice(['1', '2', '4', '8', '16']),
               required=True)
 @click.option('--public-key-format', type=click.Choice(['hash', 'full']),
               default='hash', help='In what format to add the public key to '
@@ -99,8 +99,21 @@ def wrap(key, align, version, header_size, pad_header, layout, pad, confirm,
         boot_record = "NSPE"
     else:
         boot_record = "NSPE_SPE"
-
-    img = imgtool.image.Image(version=imgtool.version.decode_version(version),
+    if align=='16':
+        max_align=16
+        img = imgtool.image.Image(version=imgtool.version.decode_version(version),
+                              header_size=header_size, pad_header=pad_header,
+                              pad=pad, confirm=confirm, align=int(align),
+                              slot_size=slot_size, max_sectors=max_sectors,
+                              overwrite_only=overwrite_only, endian=endian,
+                              load_addr=load_addr, rom_fixed=rom_fixed,
+                              erased_val=erased_val,
+                              save_enctlv=save_enctlv,
+                              security_counter=security_counter,
+                              max_align=max_align)
+    else:
+        #use default value
+        img = imgtool.image.Image(version=imgtool.version.decode_version(version),
                               header_size=header_size, pad_header=pad_header,
                               pad=pad, confirm=confirm, align=int(align),
                               slot_size=slot_size, max_sectors=max_sectors,
