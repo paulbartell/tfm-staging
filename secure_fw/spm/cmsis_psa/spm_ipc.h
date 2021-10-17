@@ -55,6 +55,10 @@
 
 #define TFM_MSG_MAGIC                   0x15154343
 
+/* Get partition by thread or context data */
+#define GET_THRD_OWNER(x)        TO_CONTAINER(x, struct partition_t, thrd)
+#define GET_CTX_OWNER(x)         TO_CONTAINER(x, struct partition_t, ctx_ctrl)
+
 /* Message struct to collect parameter from client */
 struct tfm_msg_body_t {
     int32_t magic;
@@ -281,19 +285,6 @@ void tfm_spm_fill_msg(struct tfm_msg_body_t *msg,
                       psa_invec *invec, size_t in_len,
                       psa_outvec *outvec, size_t out_len,
                       psa_outvec *caller_outvec);
-
-/**
- * \brief                   Send message and wake up the SP who is waiting on
- *                          message queue, block the current thread and
- *                          scheduler triggered
- *
- * \param[in] service       Target service context pointer, which can be
- *                          obtained by partition management functions
- * \param[in] msg           message created by tfm_spm_create_msg()
- *                          \ref tfm_msg_body_t structures
- */
-void tfm_spm_send_event(struct service_t *service,
-                        struct tfm_msg_body_t *msg);
 
 /**
  * \brief                   Check the client version according to

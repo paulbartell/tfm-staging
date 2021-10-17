@@ -47,9 +47,10 @@
 
 #define SE_BL2_PARTITION_SIZE           (0x10000)     /* 64 KiB */
 #define TFM_PARTITION_SIZE              (0x60000)     /* 384 KiB */
-#define OPTEE_PARTITION_SIZE            (0x80000)     /* 512 KiB */
-#define U_BOOT_PARTITION_SIZE           (0x80000)     /* 512 KiB */
-#define SPL_PARTITION_SIZE              (0x40000)     /* 256 KiB */
+#define FIP_MAX_SIZE                    (0x80000)     /* 512 KiB */
+#define FIP1_SIZE                       (0x151573)     /* 1350 KiB */
+#define FIP2_SIZE                       (0x80000)     /* 512 KiB */
+#define FIP_SIGNATURE_AREA_SIZE         (0x1000)      /* 4 KiB */
 
 
 /* Secure Enclave internal SRAM */
@@ -62,6 +63,30 @@
 #define BL1_DATA_SIZE                   (0x10000)     /* 64 KiB*/
 #define BL1_DATA_LIMIT                  (BL1_DATA_START + BL1_DATA_SIZE - 1)
 
+/* Smallest flash programmable unit in bytes */
+#define TFM_HAL_FLASH_PROGRAM_UNIT      (1)
+
+#if PLATFORM_IS_FVP
+/* INTEL STRATA J3 NOR FLASH NVM */
+#define STRATA_NVM_FLASH_TOTAL_SIZE     (0x04000000)  /* 32 MB Nor Flash (PMOD SF3) */
+#define STRATA_NVM_FLASH_SECTOR_SIZE    (0x00001000)  /* 64 KB Sub sector size*/
+#define STRATA_NVM_FLASH_PAGE_SIZE      (256U)        /* 64 KB */
+#define STRATA_NVM_FLASH_PROGRAM_UNIT   (1U)          /* 4 B */
+
+#define FLASH_DEV_NAME                  Driver_FLASH0
+#define FLASH_TOTAL_SIZE                (STRATA_NVM_FLASH_TOTAL_SIZE)  /* 32 MB */
+#define FLASH_AREA_IMAGE_SECTOR_SIZE    (STRATA_NVM_FLASH_SECTOR_SIZE)      /* 4 KiB */
+
+#define STRATA_SE_FLASH_TOTAL_SIZE      (0x00800000)  /* 32 MB Nor Flash (PMOD SF3) */
+#define STRATA_SE_FLASH_SECTOR_SIZE     (0x00001000)  /* 64 KB Sub sector size*/
+#define STRATA_SE_FLASH_PAGE_SIZE       (256U)        /* 64 KB */
+#define STRATA_SE_FLASH_PROGRAM_UNIT    (1U)          /* 4 B */
+
+#define FLASH_DEV_NAME_SE_SECURE_FLASH  Driver_FLASH1
+
+
+#else
+
 /* PMOD SF3 NOR FLASH */
 #define PMOD_SF3_FLASH_TOTAL_SIZE       (0x02000000)  /* 32 MB Nor Flash (PMOD SF3) */
 #define PMOD_SF3_FLASH_SECTOR_SIZE      (0x00001000)  /* 4 KB Sub sector size*/
@@ -69,11 +94,11 @@
 #define PMOD_SF3_FLASH_PROGRAM_UNIT     (1U)          /* 1 B */
 
 #define FLASH_DEV_NAME Driver_FLASH0
-/* Smallest flash programmable unit in bytes */
-#define TFM_HAL_FLASH_PROGRAM_UNIT      (1)
 
 #define FLASH_TOTAL_SIZE                (PMOD_SF3_FLASH_TOTAL_SIZE)  /* 32 MB */
 #define FLASH_AREA_IMAGE_SECTOR_SIZE    (PMOD_SF3_FLASH_SECTOR_SIZE)      /* 4 KiB */
+
+#endif
 
 #ifdef BL1
 
@@ -113,32 +138,19 @@
 #define FLASH_AREA_1_OFFSET             (FLASH_AREA_0_OFFSET + FLASH_AREA_0_SIZE)
 #define FLASH_AREA_1_SIZE               (TFM_PARTITION_SIZE)
 
-/* OPTEE primary and secondary images */
+/* Host FIPs */
+#define FLASH_FIP1_OFFSET               (FLASH_AREA_1_OFFSET + FLASH_AREA_1_SIZE + FIP_SIGNATURE_AREA_SIZE)
+#define FLASH_FIP1_ADDRESS              (FLASH_BASE_ADDRESS + FLASH_FIP1_OFFSET)
+#define FLASH_FIP1_SIZE                 (FIP1_SIZE)
+#define FLASH_FIP2_OFFSET               (FLASH_FIP1_OFFSET + FIP_MAX_SIZE)
+#define FLASH_FIP2_ADDRESS              (FLASH_BASE_ADDRESS + FLASH_FIP2_OFFSET)
+#define FLASH_FIP2_SIZE                 (FIP2_SIZE)
+
+/* Host BL2 (TF-A) primary and secondary image. */
 #define FLASH_AREA_2_ID                 (FLASH_AREA_1_ID + 1)
-#define FLASH_AREA_2_OFFSET             (FLASH_AREA_1_OFFSET + FLASH_AREA_1_SIZE)
-#define FLASH_AREA_2_SIZE               (OPTEE_PARTITION_SIZE)
-
 #define FLASH_AREA_3_ID                 (FLASH_AREA_2_ID + 1)
-#define FLASH_AREA_3_OFFSET             (FLASH_AREA_2_OFFSET + FLASH_AREA_2_SIZE)
-#define FLASH_AREA_3_SIZE               (OPTEE_PARTITION_SIZE)
-
-/* U-boot primary and secondary images */
-#define FLASH_AREA_4_ID                 (FLASH_AREA_3_ID + 1)
-#define FLASH_AREA_4_OFFSET             (FLASH_AREA_3_OFFSET + FLASH_AREA_3_SIZE)
-#define FLASH_AREA_4_SIZE               (U_BOOT_PARTITION_SIZE)
-
-#define FLASH_AREA_5_ID                 (FLASH_AREA_4_ID + 1)
-#define FLASH_AREA_5_OFFSET             (FLASH_AREA_4_OFFSET + FLASH_AREA_4_SIZE)
-#define FLASH_AREA_5_SIZE               (U_BOOT_PARTITION_SIZE)
-
-/* SPL primary and secondary images */
-#define FLASH_AREA_6_ID                 (FLASH_AREA_5_ID + 1)
-#define FLASH_AREA_6_OFFSET             (FLASH_AREA_5_OFFSET + FLASH_AREA_5_SIZE)
-#define FLASH_AREA_6_SIZE               (SPL_PARTITION_SIZE)
-
-#define FLASH_AREA_7_ID                 (FLASH_AREA_6_ID + 1)
-#define FLASH_AREA_7_OFFSET             (FLASH_AREA_6_OFFSET + FLASH_AREA_6_SIZE)
-#define FLASH_AREA_7_SIZE               (SPL_PARTITION_SIZE)
+#define FLASH_INVALID_OFFSET            (0xFFFFFFFF)
+#define FLASH_INVALID_SIZE              (0xFFFFFFFF)
 
 /* Macros needed to imgtool.py, used when creating TF-M signed image */
 #define IMAGE_LOAD_ADDRESS              (SRAM_BASE)
@@ -149,16 +161,18 @@
 
 #define FLASH_AREA_IMAGE_PRIMARY(x)     (((x) == 0) ? FLASH_AREA_0_ID : \
                                          ((x) == 1) ? FLASH_AREA_2_ID : \
-                                         ((x) == 2) ? FLASH_AREA_4_ID : \
                                                       255 )
 #define FLASH_AREA_IMAGE_SECONDARY(x)   (((x) == 0) ? FLASH_AREA_1_ID : \
                                          ((x) == 1) ? FLASH_AREA_3_ID : \
-                                         ((x) == 2) ? FLASH_AREA_5_ID : \
                                                       255 )
 
 #define FLASH_AREA_IMAGE_SCRATCH        255
 
+#if PLATFORM_IS_FVP
+#define FLASH_SECTOR_SIZE              (STRATA_NVM_FLASH_SECTOR_SIZE) /* 1 kB */
+#else
 #define FLASH_SECTOR_SIZE              (PMOD_SF3_FLASH_SECTOR_SIZE) /* 1 kB */
+#endif
 
 #define FLASH_ITS_AREA_OFFSET           (0)
 #define FLASH_ITS_AREA_SIZE             (4 * FLASH_SECTOR_SIZE)  /* 4 KiB */
@@ -177,7 +191,17 @@
  * Note: Further documentation of these definitions can be found in the
  * TF-M ITS Integration Guide.
  */
+#if PLATFORM_IS_FVP
+#define TFM_HAL_ITS_FLASH_DRIVER Driver_FLASH1
+#else
 #define TFM_HAL_ITS_FLASH_DRIVER Driver_FLASH0
+#endif
+
+/* Protected Storage (PS) Service definitions
+ * Note: Further documentation of these definitions can be found in the
+ * TF-M PS Integration Guide.
+ */
+#define TFM_HAL_PS_FLASH_DRIVER Driver_FLASH0
 
 /* In this target the CMSIS driver requires only the offset from the base
  * address instead of the full memory address.
@@ -190,12 +214,6 @@
 #define TFM_HAL_ITS_SECTORS_PER_BLOCK   (1)
 /* Smallest flash programmable unit in bytes */
 #define TFM_HAL_ITS_PROGRAM_UNIT        (1)
-
-/* Protected Storage (PS) Service definitions
- * Note: Further documentation of these definitions can be found in the
- * TF-M PS Integration Guide.
- */
-#define TFM_HAL_PS_FLASH_DRIVER Driver_FLASH0
 
 /* In this target the CMSIS driver requires only the offset from the base
  * address instead of the full memory address.
@@ -217,5 +235,4 @@
 #define TFM_OTP_NV_COUNTERS_SECTOR_SIZE FLASH_OTP_NV_COUNTERS_SECTOR_SIZE
 #define TFM_OTP_NV_COUNTERS_BACKUP_AREA_ADDR (TFM_OTP_NV_COUNTERS_AREA_ADDR + \
                                               TFM_OTP_NV_COUNTERS_AREA_SIZE)
-
 #endif /* __FLASH_LAYOUT_H__ */
