@@ -16,7 +16,7 @@
 #  ******************************************************************************
 # arg1 is optional, it fixes compiler full path if present
 # Absolute path to this script
-SCRIPT=$(readlink -f $0)
+SCRIPT=$(greadlink -f $0)
 # Absolute path this script
 projectdir=`dirname $SCRIPT`
 source $projectdir/preprocess.sh
