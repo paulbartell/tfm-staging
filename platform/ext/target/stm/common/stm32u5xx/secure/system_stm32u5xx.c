@@ -3,12 +3,13 @@
   * @file    system_stm32u5xx.c
   * @author  MCD Application Team
   * @brief   CMSIS Cortex-M33 Device Peripheral Access Layer System Source File
+  *          to be used in secure application when the system implements
+  *          the TrustZone-M security.
   *
   *   This file provides two functions and one global variable to be called from
   *   user application:
-  *      - SystemInit(): This function is called at startup just after reset and
-  *                      before branch to main program. This call is made inside
-  *                      the "startup_stm32u5xx.s" file.
+  *      - SystemInit(): This function is called at secure startup before
+  *                      branching to the secure main program.
   *
   *      - SystemCoreClock variable: Contains the core clock (HCLK), it can be used
   *                                  by the user application to setup the SysTick
@@ -78,8 +79,8 @@
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; Copyright (c) 2020 STMicroelectronics.
-  * All rights reserved.</center></h2>
+  * Copyright (c) 2021 STMicroelectronics.
+  * All rights reserved.
   *
   * This software component is licensed by ST under BSD 3-Clause license,
   * the "License"; You may not use this file except in compliance with the
@@ -119,13 +120,12 @@
 /** @addtogroup STM32U5xx_System_Private_Defines
   * @{
   */
-
 #if !defined  (HSE_VALUE)
   #define HSE_VALUE    16000000U /*!< Value of the External oscillator in Hz */
 #endif /* HSE_VALUE */
 
 #if !defined  (MSI_VALUE)
-  #define MSI_VALUE    4000000U  /*!< Value of the Internal oscillator in Hz*/
+  #define MSI_VALUE    4000000U /*!< Value of the Internal oscillator in Hz*/
 #endif /* MSI_VALUE */
 
 #if !defined  (HSI_VALUE)
@@ -139,7 +139,6 @@
 #define VECT_TAB_OFFSET  0x00000000UL /*!< Vector Table base offset field.
                                    This value must be a multiple of 0x200. */
 /******************************************************************************/
-
 /**
   * @}
   */
@@ -169,10 +168,10 @@
   const uint8_t  APBPrescTable[8] =  {0U, 0U, 0U, 0U, 1U, 2U, 3U, 4U};
   const uint32_t MSIRangeTable[16] = {48000000U,24000000U,16000000U,12000000U, 4000000U, 2000000U, 1500000U,\
                                       1000000U, 3072000U, 1536000U,1024000U, 768000U, 400000U, 200000U, 150000U, 100000U};
+
 /**
   * @}
   */
-
 /** @addtogroup STM32U5xx_System_Private_FunctionPrototypes
   * @{
   */
@@ -194,9 +193,30 @@
 void SystemInit(void)
 {
   /* FPU settings ------------------------------------------------------------*/
-  #if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
-   SCB->CPACR |= ((3UL << 20U)|(3UL << 22U));  /* set CP10 and CP11 Full Access */
-  #endif
+  SCB->CPACR |= ((3UL << 20U)|(3UL << 22U));     /* set CP10 and CP11 Full Access */
+
+  SCB_NS->CPACR |= ((3UL << 20U)|(3UL << 22U));  /* set CP10 and CP11 Full Access */
+
+  /* Reset the RCC clock configuration to the default reset state ------------*/
+  /* Set MSION bit */
+  RCC->CR = RCC_CR_MSISON;
+
+  /* Reset CFGR register */
+  RCC->CFGR1 = 0U;
+  RCC->CFGR2 = 0U;
+  RCC->CFGR3 = 0U;
+
+  /* Reset HSEON, CSSON , HSION, PLLxON bits */
+  RCC->CR &= ~(RCC_CR_HSEON | RCC_CR_CSSON | RCC_CR_PLL1ON | RCC_CR_PLL2ON | RCC_CR_PLL3ON);
+
+  /* Reset PLLCFGR register */
+  RCC->PLL1CFGR = 0U;
+
+  /* Reset HSEBYP bit */
+  RCC->CR &= ~(RCC_CR_HSEBYP);
+
+  /* Disable all interrupts */
+  RCC->CIER = 0U;
 }
 
 /**
@@ -204,6 +224,11 @@ void SystemInit(void)
   *         The SystemCoreClock variable contains the core clock (HCLK), it can
   *         be used by the user application to setup the SysTick timer or configure
   *         other parameters.
+  *
+  * @note   Depending on secure or non-secure compilation, the adequate RCC peripheral
+  *         memory are is accessed thanks to RCC alias defined in stm32u5xxxx.h device file
+  *         so either from RCC_S peripheral register mapped memory in secure or from
+  *         RCC_NS peripheral register mapped memory in non-secure.
   *
   * @note   Each time the core clock (HCLK) changes, this function must be called
   *         to update SystemCoreClock variable value. Otherwise, any configuration
@@ -319,7 +344,6 @@ void SystemCoreClockUpdate(void)
   /* HCLK clock frequency */
   SystemCoreClock >>= tmp;
 }
-
 
 /**
   * @}
