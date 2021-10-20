@@ -69,7 +69,7 @@
 #define _SRAM4_BASE_S           (0x38000000) /*!< SRAM4(16 KB) base address */
 
 #define TOTAL_ROM_SIZE          FLASH_TOTAL_SIZE
-#define TOTAL_RAM_SIZE          (_SRAM1_SIZE_MAX +_SRAM2_SIZE_MAX + _SRAM3_SIZE_MAX)
+#define TOTAL_RAM_SIZE          (_SRAM1_SIZE_MAX +_SRAM2_SIZE_MAX)
 /* 192 + 64 Kbytes - BOOT info */
 /* boot info are placed and locked at top of SRAM2  */
 
