@@ -79,6 +79,14 @@ const struct memory_region_limits memory_regions =
 #define PERIPHERALS_BASE_NS_START (PERIPH_BASE_NS)
 #define PERIPHERALS_BASE_NS_END   (0x4FFFFFFF)
 
+
+//struct sau_cfg_t {
+//    uint32_t RNR;
+//    uint32_t RBAR;
+//    uint32_t RLAR;
+//    TFM_BoolTypeDef nsc;
+//}
+
 const struct sau_cfg_t sau_init_cfg[] = {
     /* Configures SAU regions to be non-secure */
     {
@@ -167,6 +175,10 @@ void Error_Handler(void)
 #else
 void Error_Handler(void)
 {
+	while(1)
+	{
+		__NOP();
+	}
 	/* Reset the system */
     NVIC_SystemReset();
 }
@@ -500,6 +512,7 @@ void gtzc_init_cfg(void)
       /*   only SRAM2 is secure  */
       gtzc_config_sram(SRAM2_BASE, SRAM2_SIZE, 0, (uint32_t)&REGION_NAME(Image$$, TFM_APP_RW_STACK_END, $$Base)
               - SRAM2_BASE - 1, FLAG_NPRIV);
+
       gtzc_config_sram(SRAM2_BASE, SRAM2_SIZE, (uint32_t)&REGION_NAME(Image$$, TFM_APP_RW_STACK_END, $$Base)
               -SRAM2_BASE, SRAM2_SIZE - 1, 0);
 #endif
@@ -531,6 +544,7 @@ void gtzc_init_cfg(void)
       HAL_GTZC_TZIC_EnableIT(GTZC_PERIPH_FLASH);
       HAL_GTZC_TZIC_EnableIT(GTZC_PERIPH_FLASH_REG);
       HAL_GTZC_TZIC_EnableIT(GTZC_PERIPH_SRAM2);
+
       /* GTZC register */
       HAL_GTZC_TZIC_EnableIT(GTZC_PERIPH_TZSC1);
       HAL_GTZC_TZIC_EnableIT(GTZC_PERIPH_TZIC1);
@@ -603,10 +617,10 @@ void gtzc_init_cfg(void)
 
       gtzc_config_sram(SRAM3_BASE, SRAM3_SIZE, 0, SRAM3_SIZE -1, FLAG_NPRIV | FLAG_NSEC);
       gtzc_config_sram(SRAM4_BASE, SRAM4_SIZE, 0, SRAM4_SIZE -1, FLAG_NPRIV | FLAG_NSEC);
-      if (GTZC_MPCBB1_S->CFGLOCKR1 != MPCBB_LOCK(SRAM1_SIZE)) Error_Handler();
-      if (GTZC_MPCBB2_S->CFGLOCKR1 != MPCBB_LOCK(SRAM2_SIZE)) Error_Handler();
-      if (GTZC_MPCBB3_S->CFGLOCKR1 != MPCBB_LOCK(SRAM3_SIZE)) Error_Handler();
-      if (GTZC_MPCBB4_S->CFGLOCKR1 != MPCBB_LOCK(SRAM4_SIZE)) Error_Handler();
+//      if (GTZC_MPCBB1_S->CFGLOCKR1 != MPCBB_LOCK(SRAM1_SIZE)) Error_Handler();
+//      if (GTZC_MPCBB2_S->CFGLOCKR1 != MPCBB_LOCK(SRAM2_SIZE)) Error_Handler();
+//      if (GTZC_MPCBB3_S->CFGLOCKR1 != MPCBB_LOCK(SRAM3_SIZE)) Error_Handler();
+//      if (GTZC_MPCBB4_S->CFGLOCKR1 != MPCBB_LOCK(SRAM4_SIZE)) Error_Handler();
       gtzc_internal_flash_priv(0x0, (uint32_t)(&REGION_NAME(Image$$, TFM_UNPRIV_CODE, $$RO$$Base)) - FLASH_BASE_S - 1);
       HAL_GTZC_TZSC_GetConfigPeriphAttributes(GTZC_PERIPH_HASH, &gtzc_periph_att);
       if (gtzc_periph_att != (GTZC_TZSC_PERIPH_SEC | GTZC_TZSC_PERIPH_PRIV)) {
