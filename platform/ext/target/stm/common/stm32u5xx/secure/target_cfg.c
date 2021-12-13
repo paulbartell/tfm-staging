@@ -107,8 +107,8 @@ const struct sau_cfg_t sau_init_cfg[] = {
     },
     {
         TFM_NS_REGION_DATA_2,
-        SRAM3_BASE_NS,
-        (SRAM4_BASE_NS + _SRAM4_SIZE_MAX - 1),
+        NS_DATA2_START,
+        NS_DATA2_LIMIT,
         TFM_FALSE,
 #ifdef FLOW_CONTROL
         FLOW_STEP_SAU_EN_R2,

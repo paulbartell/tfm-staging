@@ -41,3 +41,5 @@ set (BL2_FILE_TO_PREPROCESS ${CMAKE_CURRENT_BINARY_DIR}/image_macros_to_preproce
 file(WRITE ${BL2_FILE_TO_PREPROCESS} ${BL2_PREPROCESSING})
 install(FILES ${BL2_FILE_TO_PREPROCESS}
         DESTINATION ${CMAKE_BINARY_DIR} )
+
+configure_file(${B_U585I_IOT02A_DIR}/tfm_config_export.h.in ${CMAKE_BINARY_DIR}/tfm_config_export.h)

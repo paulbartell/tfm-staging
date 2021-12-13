@@ -26,6 +26,7 @@ MEMORY
 {
   FLASH (rx)  : ORIGIN = NS_CODE_START, LENGTH = NS_CODE_SIZE
   RAM   (rwx) : ORIGIN = NS_DATA_START, LENGTH = NS_DATA_SIZE
+  RAM2  (rwx) : ORIGIN = NS_DATA2_START, LENGTH = NS_DATA2_SIZE
 }
 
 __heap_size__  = NS_HEAP_SIZE;
@@ -120,7 +121,9 @@ SECTIONS
     .testprotection NS_DATA_START :
     {
          *(.bss.NoInit);
-    } > RAM
+    } > RAM2
+
+    /* Cannot be moved to RAM2 */
 
     .data (NS_DATA_START+NS_NO_INIT_DATA_SIZE) : AT (__etext)
     {
@@ -164,21 +167,21 @@ SECTIONS
         *(COMMON)
         . = ALIGN(4);
         __bss_end__ = .;
-    } > RAM
+    } > RAM2
 
     bss_size = __bss_end__ - __bss_start__;
 
     .msp_stack : ALIGN(32)
     {
         . += __msp_stack_size__;
-    } > RAM
+    } > RAM2
     Image$$ARM_LIB_STACK_MSP$$ZI$$Base = ADDR(.msp_stack);
     Image$$ARM_LIB_STACK_MSP$$ZI$$Limit = ADDR(.msp_stack) + SIZEOF(.msp_stack);
 
     .psp_stack : ALIGN(32)
     {
         . += __psp_stack_size__;
-    } > RAM
+    } > RAM2
     Image$$ARM_LIB_STACK$$ZI$$Base = ADDR(.psp_stack);
     Image$$ARM_LIB_STACK$$ZI$$Limit = ADDR(.psp_stack) + SIZEOF(.psp_stack);
 
@@ -190,7 +193,7 @@ SECTIONS
         . += __heap_size__;
         __HeapLimit = .;
         __heap_limit = .; /* Add for _sbrk */
-    } > RAM
+    } > RAM2
 
     PROVIDE(__stack = Image$$ARM_LIB_STACK$$ZI$$Limit);
 }

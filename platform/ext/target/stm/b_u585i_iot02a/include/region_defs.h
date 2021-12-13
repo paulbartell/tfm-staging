@@ -154,6 +154,10 @@
 #define NS_DATA_SIZE                        (NS_TOTAL_RAM_SIZE)
 #define NS_DATA_LIMIT                       (NS_DATA_START + NS_DATA_SIZE - 1)
 
+#define NS_DATA2_START                      (_SRAM3_BASE_NS)
+#define NS_DATA2_SIZE                       (_SRAM3_SIZE_MAX + _SRAM4_SIZE_MAX)
+#define NS_DATA2_LIMIT                      (NS_DATA2_START + NS_DATA2_SIZE - 1)
+
 /* NS partition information is used for MPC and SAU configuration */
 #define NS_PARTITION_START                  (NS_CODE_START)
 #define NS_PARTITION_SIZE                   (NS_CODE_SIZE)
