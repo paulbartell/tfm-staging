@@ -10,6 +10,7 @@ set(BL2                                 ON         CACHE BOOL     "Whether to bu
 set(BL2_TRAILER_SIZE                    0x800      CACHE STRING   "Trailer size")
 set(DEFAULT_MCUBOOT_FLASH_MAP           OFF        CACHE BOOL     "Whether to use the default flash map defined by TF-M project")
 set(MCUBOOT_UPGRADE_STRATEGY            "RAM_LOAD" CACHE STRING   "Upgrade strategy when multiple boot images are loaded [OVERWRITE_ONLY, SWAP, DIRECT_XIP, RAM_LOAD]")
+set(MCUBOOT_SECURITY_COUNTER_S          "1"      CACHE STRING    "Security counter for S image. auto sets it to IMAGE_VERSION_S")
 
 set(TFM_ISOLATION_LEVEL                 2          CACHE STRING   "Isolation level")
 set(MCUBOOT_IMAGE_NUMBER                2          CACHE STRING   "Whether to combine S and NS into either 1 image, or sign each separately")
