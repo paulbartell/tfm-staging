@@ -103,7 +103,7 @@
 #endif /*  (FLASH_ITS_AREA_OFFSET % FLASH_AREA_IMAGE_SECTOR_SIZE) != 0 */
 
 #define FLASH_S_PARTITION_SIZE          (0x40000) /* 256 KB for S partition */
-#define FLASH_NS_PARTITION_SIZE         (0x80000) /* 512 KB for NS partition */
+#define FLASH_NS_PARTITION_SIZE         (0xA0000) /* 640 KB for NS partition */
 
 #define FLASH_PARTITION_SIZE            (FLASH_S_PARTITION_SIZE+FLASH_NS_PARTITION_SIZE)
 
