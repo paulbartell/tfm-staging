@@ -56,10 +56,10 @@ extern "C" {
 // #define MBEDTLS_ECDSA_SIGN_ALT
 // #endif
 /* specific Define for platform hardware accelerator */
-#define GENERATOR_HW_PKA_EXTENDED_API
-#define GENERATOR_HW_CRYPTO_DPA_SUPPORTED
-#define HW_CRYPTO_DPA_AES
-#define HW_CRYPTO_DPA_GCM
+// #define GENERATOR_HW_PKA_EXTENDED_API
+// #define GENERATOR_HW_CRYPTO_DPA_SUPPORTED
+// #define HW_CRYPTO_DPA_AES
+// #define HW_CRYPTO_DPA_GCM
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
