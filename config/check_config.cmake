@@ -64,9 +64,6 @@ tfm_invalid_config(CONFIG_TFM_SPE_FP STREQUAL "0" AND CONFIG_TFM_LAZY_STACKING_S
 
 ########################## BL2 #################################################
 
-get_property(MCUBOOT_STRATEGY_LIST CACHE MCUBOOT_UPGRADE_STRATEGY PROPERTY STRINGS)
-tfm_invalid_config(BL2 AND (NOT MCUBOOT_UPGRADE_STRATEGY IN_LIST MCUBOOT_STRATEGY_LIST))
-
 tfm_invalid_config(MCUBOOT_IMAGE_NUMBER GREATER 3)
 
 ####################### Code sharing ###########################################
