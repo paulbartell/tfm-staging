@@ -23,19 +23,21 @@
  * some of the values are redefined here with different names, these are marked
  * with comment.
  */
- /* Flash layout for b_u585i_iot02a  with BL2 (multiple image boot):
+
+/* Flash layout for b_u585i_iot02a  with BL2 (multiple image boot):
  *
- * 0x0000_0000 SCRATCH (64KB)
- * 0x0001_0000 BL2 - counters(16 KB)
- * 0x0001_4000 BL2 - MCUBoot (84 KB)
- * 0x0002_7000 OTP Write Protect (4KB)
- * 0x0002_8000 NV counters area (16 KB)
- * 0x0002_c000 Secure Storage Area (16 KB)
- * 0x0003_0000 Internal Trusted Storage Area (16 KB)
- * 0x0003_4000 Secure image     primary slot (256 KB)
- * 0x0007_4000 Non-secure image primary slot (512 KB)
- * 0x000f_4000 Secure image     secondary slot (256 KB)
- * 0x0013_4000 Non-secure image secondary slot (512 KB)
+ * 0x0000_0000 SCRATCH (64KB)                           0x10000
+ * 0x0001_0000 BL2 - counters (16 KB)                   0x04000
+ * 0x0001_4000 BL2 - MCUBoot (84 KB)                    0x15000
+ * 0x0002_7000 OTP Write Protect (4KB)                  0x01000
+ * 0x0002_8000 NV counters area (16 KB)                 0x04000
+ * 0x0002_c000 Secure Storage Area (16 KB)              0x04000
+ * 0x0003_0000 Internal Trusted Storage Area (16 KB)    0x04000
+ * 0x0003_4000 Secure image     primary slot (256 KB)   0x40000
+ * 0x0007_4000 Non-secure image primary slot (640 KB)   0xA0000
+ * 0x0011_4000 Secure image     secondary slot (256 KB) 0x40000
+ * 0x0015_4000 Non-secure image secondary slot (640 KB) 0xA0000
+ * 0x001F_4000 Empty space (48 KB)                      0x0C000
  *
  * Bl2 binary is written at 0x1_2000:
  * it contains bl2_counter init value, OTP write protect, NV counters area init.
