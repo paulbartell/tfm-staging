@@ -26,18 +26,17 @@
 
 /* Flash layout for b_u585i_iot02a  with BL2 (multiple image boot):
  *
- * 0x0000_0000 SCRATCH (64KB)                           0x10000
- * 0x0001_0000 BL2 - counters (16 KB)                   0x04000
- * 0x0001_4000 BL2 - MCUBoot (84 KB)                    0x15000
- * 0x0002_7000 OTP Write Protect (4KB)                  0x01000
- * 0x0002_8000 NV counters area (16 KB)                 0x04000
- * 0x0002_c000 Secure Storage Area (16 KB)              0x04000
- * 0x0003_0000 Internal Trusted Storage Area (16 KB)    0x04000
- * 0x0003_4000 Secure image     primary slot (256 KB)   0x40000
- * 0x0007_4000 Non-secure image primary slot (640 KB)   0xA0000
- * 0x0011_4000 Secure image     secondary slot (256 KB) 0x40000
- * 0x0015_4000 Non-secure image secondary slot (640 KB) 0xA0000
- * 0x001F_4000 Empty space (48 KB)                      0x0C000
+ * 0x0000_0000 SCRATCH                          (64KB)      0x10000
+ * 0x0001_0000 BL2 - counters                   (16 KB)     0x04000
+ * 0x0001_4000 BL2 - MCUBoot                    (124 KB)    0x1F000
+ * 0x0003_3000 OTP Write Protect                (4KB)       0x01000
+ * 0x0002_E000 NV counters area                 (16 KB)     0x04000
+ * 0x0003_2000 Secure Storage Area              (16 KB)     0x04000
+ * 0x0003_6000 Internal Trusted Storage Area    (16 KB)     0x04000
+ * 0x0003_A000 Secure image     primary slot    (256 KB)    0x40000
+ * 0x0007_A000 Non-secure image primary slot    (640 KB)    0xA0000
+ * 0x0011_A000 Secure image     secondary slot  (256 KB)    0x40000
+ * 0x0015_A000 Non-secure image secondary slot  (640 KB)    0xA0000
  *
  * Bl2 binary is written at 0x1_2000:
  * it contains bl2_counter init value, OTP write protect, NV counters area init.
@@ -50,7 +49,6 @@
 #define FLASH_BASE_ADDRESS              (0x0c000000) /* same as FLASH0_BASE_S */
 
 /* Flash device ID */
-
 
 /* Offset and size definitions of the flash partitions that are handled by the
  * bootloader. The image swapping is done between IMAGE_0 and IMAGE_1, SCRATCH
@@ -68,11 +66,13 @@
 
 /* area for bl2 anti roll back counter */
 #define FLASH_BL2_NVCNT_AREA_OFFSET     (FLASH_AREA_SCRATCH_SIZE)
-#define FLASH_BL2_NVCNT_AREA_SIZE       (FLASH_AREA_IMAGE_SECTOR_SIZE+FLASH_AREA_IMAGE_SECTOR_SIZE)
+#define FLASH_BL2_NVCNT_AREA_SIZE       (0x4000)
+
 /* Area for downloading bl2 image */
-#define FLASH_AREA_BL2_BIN_OFFSET       (FLASH_BL2_NVCNT_AREA_OFFSET +FLASH_AREA_IMAGE_SECTOR_SIZE)
+#define FLASH_AREA_BL2_BIN_OFFSET       (FLASH_BL2_NVCNT_AREA_OFFSET+FLASH_AREA_IMAGE_SECTOR_SIZE)
+
 /* personal Area Not used */
-#define FLASH_AREA_PERSO_OFFSET         (FLASH_BL2_NVCNT_AREA_OFFSET +FLASH_BL2_NVCNT_AREA_SIZE)
+#define FLASH_AREA_PERSO_OFFSET         (FLASH_BL2_NVCNT_AREA_OFFSET+FLASH_BL2_NVCNT_AREA_SIZE)
 #define FLASH_AREA_PERSO_SIZE           (0x0)
 /* control personal area */
 #if (FLASH_AREA_PERSO_OFFSET % FLASH_AREA_IMAGE_SECTOR_SIZE) != 0
@@ -80,24 +80,28 @@
 #endif /* FLASH_AREA_PERSO_OFFSET % FLASH_AREA_IMAGE_SECTOR_SIZE) != 0 */
 
 /* area for BL2 code protected by hdp */
-#define FLASH_AREA_BL2_OFFSET           (FLASH_AREA_PERSO_OFFSET+FLASH_AREA_PERSO_SIZE )
-#define FLASH_AREA_BL2_SIZE             (0x12000)
+#define FLASH_AREA_BL2_OFFSET           (FLASH_AREA_PERSO_OFFSET+FLASH_AREA_PERSO_SIZE)
+#define FLASH_AREA_BL2_SIZE             (0x18000)
+
 /* HDP area end at this address */
 #define FLASH_BL2_HDP_END               (FLASH_AREA_BL2_OFFSET+FLASH_AREA_BL2_SIZE-1)
+
 /* area for BL2 code not protected by hdp */
 #define FLASH_AREA_BL2_NOHDP_OFFSET     (FLASH_AREA_BL2_OFFSET+FLASH_AREA_BL2_SIZE)
 #define FLASH_AREA_BL2_NOHDP_CODE_SIZE  (0x1000)
 #define FLASH_AREA_OTP_OFFSET           (FLASH_AREA_BL2_NOHDP_OFFSET+FLASH_AREA_BL2_NOHDP_CODE_SIZE)
 #define FLASH_AREA_OTP_SIZE             (0x1000)
 #define FLASH_AREA_BL2_NOHDP_SIZE       (FLASH_AREA_OTP_SIZE+FLASH_AREA_BL2_NOHDP_CODE_SIZE)
+
 /* control area for BL2 code protected by hdp */
 #if (FLASH_AREA_BL2_NOHDP_OFFSET % FLASH_AREA_IMAGE_SECTOR_SIZE) != 0
 #error "HDP area must be aligned on FLASH_AREA_IMAGE_SECTOR_SIZE"
 #endif /* (FLASH_AREA_BL2_NOHDP_OFFSET % FLASH_AREA_IMAGE_SECTOR_SIZE) != 0 */
 
 /* Non Volatile Counters definitions */
-#define FLASH_NV_COUNTERS_AREA_SIZE      (FLASH_AREA_IMAGE_SECTOR_SIZE+FLASH_AREA_IMAGE_SECTOR_SIZE)
-#define FLASH_NV_COUNTERS_AREA_OFFSET   (FLASH_AREA_BL2_NOHDP_OFFSET+FLASH_AREA_BL2_NOHDP_SIZE)
+#define FLASH_NV_COUNTERS_AREA_OFFSET    (FLASH_AREA_BL2_NOHDP_OFFSET+FLASH_AREA_BL2_NOHDP_SIZE)
+#define FLASH_NV_COUNTERS_AREA_SIZE      (0x4000)
+
 /* Control Non Volatile Counters definitions */
 #if (FLASH_NV_COUNTER_AREA_SIZE % FLASH_AREA_IMAGE_SECTOR_SIZE) != 0
 #error "FLASH_NV_COUNTER_AREA_SIZE not aligned on FLASH_AREA_IMAGE_SECTOR_SIZE"
@@ -141,9 +145,9 @@
 
 #define FLASH_AREA_0_SIZE               (FLASH_S_PARTITION_SIZE)
 /* Non-secure image primary slot */
-#define FLASH_AREA_1_ID                 (FLASH_AREA_0_ID + 1)
+#define FLASH_AREA_1_ID                 (FLASH_AREA_0_ID+1)
 #define FLASH_AREA_1_DEVICE_ID          (FLASH_AREA_0_DEVICE_ID)
-#define FLASH_AREA_1_OFFSET             (FLASH_AREA_0_OFFSET + FLASH_AREA_0_SIZE)
+#define FLASH_AREA_1_OFFSET             (FLASH_AREA_0_OFFSET+FLASH_AREA_0_SIZE)
 /* Control Non-secure image primary slot */
 #if (FLASH_AREA_1_OFFSET  % FLASH_AREA_IMAGE_SECTOR_SIZE) != 0
 #error "FLASH_AREA_1_OFFSET  not aligned on FLASH_AREA_IMAGE_SECTOR_SIZE"
@@ -151,9 +155,9 @@
 
 #define FLASH_AREA_1_SIZE               (FLASH_NS_PARTITION_SIZE)
 /* Secure image secondary slot */
-#define FLASH_AREA_2_ID                 (FLASH_AREA_1_ID + 1)
+#define FLASH_AREA_2_ID                 (FLASH_AREA_1_ID+1)
 #define FLASH_AREA_2_DEVICE_ID          (FLASH_AREA_1_DEVICE_ID)
-#define FLASH_AREA_2_OFFSET             (FLASH_AREA_1_OFFSET + FLASH_AREA_1_SIZE)
+#define FLASH_AREA_2_OFFSET             (FLASH_AREA_1_OFFSET+FLASH_AREA_1_SIZE)
 /* Control  Secure image secondary slot */
 #if (FLASH_AREA_2_OFFSET  % FLASH_AREA_IMAGE_SECTOR_SIZE) != 0
 #error "FLASH_AREA_2_OFFSET  not aligned on FLASH_AREA_IMAGE_SECTOR_SIZE"
@@ -161,17 +165,17 @@
 
 #define FLASH_AREA_2_SIZE               (FLASH_S_PARTITION_SIZE)
 /* Non-secure image secondary slot */
-#define FLASH_AREA_3_ID                 (FLASH_AREA_2_ID + 1)
+#define FLASH_AREA_3_ID                 (FLASH_AREA_2_ID+1)
 #define FLASH_AREA_3_DEVICE_ID          (FLASH_AREA_2_DEVICE_ID)
-#define FLASH_AREA_3_OFFSET             (FLASH_AREA_2_OFFSET + FLASH_AREA_2_SIZE)
+#define FLASH_AREA_3_OFFSET             (FLASH_AREA_2_OFFSET+FLASH_AREA_2_SIZE)
 
 #if (FLASH_AREA_3_OFFSET  % FLASH_AREA_IMAGE_SECTOR_SIZE) != 0
 #error "FLASH_AREA_3_OFFSET  not aligned on FLASH_AREA_IMAGE_SECTOR_SIZE"
 #endif /*  (FLASH_AREA_3_OFFSET  % FLASH_AREA_IMAGE_SECTOR_SIZE) != 0 */
 /*Control Non-secure image secondary slot */
 #define FLASH_AREA_3_SIZE               (FLASH_NS_PARTITION_SIZE)
-#define FLASH_AREA_END_OFFSET           (FLASH_AREA_3_OFFSET + FLASH_AREA_3_SIZE)
-#define FLASH_AREA_SCRATCH_ID           (FLASH_AREA_3_ID + 1)
+#define FLASH_AREA_END_OFFSET           (FLASH_AREA_3_OFFSET+FLASH_AREA_3_SIZE)
+#define FLASH_AREA_SCRATCH_ID           (FLASH_AREA_3_ID+1)
 #define FLASH_AREA_SCRATCH_DEVICE_ID    (FLASH_AREA_3_DEVICE_ID)
 
 /*
@@ -186,7 +190,7 @@
 #define SECURE_IMAGE_OFFSET             (0x0)
 #define SECURE_IMAGE_MAX_SIZE           FLASH_S_PARTITION_SIZE
 
-#define NON_SECURE_IMAGE_OFFSET         (SECURE_IMAGE_OFFSET + SECURE_IMAGE_MAX_SIZE)
+#define NON_SECURE_IMAGE_OFFSET         (SECURE_IMAGE_OFFSET+SECURE_IMAGE_MAX_SIZE)
 #define NON_SECURE_IMAGE_MAX_SIZE       FLASH_NS_PARTITION_SIZE
 
 /* Flash device name used by BL2 and NV Counter
