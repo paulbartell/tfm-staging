@@ -112,7 +112,8 @@ static int convert_id_from_mcuboot_to_bl(uint8_t mcuboot_image_id,
 static bool get_flash_image_index(uint8_t mcuboot_image_id, uint8_t *index)
 {
     for (uint8_t i = 0; i < TFM_FWU_MAX_IMAGES; i++) {
-        if (mcuboot_ctx[i].mcuboot_image_id == mcuboot_image_id) {
+        if (mcuboot_ctx[i].fap != NULL &&
+            mcuboot_ctx[i].mcuboot_image_id == mcuboot_image_id) {
             *index = i;
             return true;
         }
@@ -608,6 +609,7 @@ static psa_status_t get_secondary_image_info(uint8_t image_id,
                         hdr.ih_protect_tlv_size;
         } else {
             /* No image in the staging area. */
+            flash_area_close(fap);
             return PSA_ERROR_DOES_NOT_EXIST;
         }
     }
